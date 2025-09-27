@@ -6,7 +6,7 @@ import axios from 'axios';
 export const PROXY_CONFIGS = {
     1: {
         name: '闪尘代理',
-        url: 'https://sch.shanchendaili.com/api.html?action=get_ip&key=HU027700915310840704oqdi&time=30&count=1&type=json&only=0',
+        url: 'https://sch.shanchendaili.com/api.html?action=get_ip&key=HU027700915310840704oqdi&time=5&count=1&type=json&only=0',
         parseResponse: (data) => {
             if (data.status !== '0') {
                 throw new Error(`获取代理IP失败: ${data.info || '未知错误'}`);
@@ -25,7 +25,7 @@ export const PROXY_CONFIGS = {
     },
     2: {
         name: 'IP赞代理',
-        url: 'https://service.ipzan.com/core-extract?num=1&no=20240729108486120249&minute=1&format=json&protocol=3&pool=quality&mode=whitelist&secret=tgcbijoum2pp78',
+        url: 'https://service.ipzan.com/core-extract?num=1&no=20240729108486120249&minute=5&format=json&protocol=3&pool=quality&mode=whitelist&secret=tgcbijoum2pp78',
         parseResponse: (data) => {
             if (data.code !== 0) {
                 throw new Error(`获取代理IP失败: ${data.message || '未知错误'}`);
@@ -58,11 +58,16 @@ export async function getProxyFromSource(proxyType = 1, count = 1) {
             throw new Error(`不支持的代理类型: ${proxyType}`);
         }
 
-        // 修改URL中的count参数
+        // 修改URL中的数量参数
         let url = config.url;
         if (count > 1) {
-            // 替换URL中的count参数
-            url = url.replace(/count=\d+/, `count=${count}`);
+            if (proxyType === 1) {
+                // 闪尘代理使用 count 参数
+                url = url.replace(/count=\d+/, `count=${count}`);
+            } else if (proxyType === 2) {
+                // IP赞代理使用 num 参数
+                url = url.replace(/num=\d+/, `num=${count}`);
+            }
         }
 
         console.log(`🌐 正在从 ${config.name} 获取 ${count} 个代理IP...`);

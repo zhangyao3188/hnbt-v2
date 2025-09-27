@@ -10,8 +10,8 @@ import { dynamicMultiAccountExecutor } from './dynamic-executor.js';
 // 如果不想使用命令行参数，可以直接在这里配置
 const SIMPLE_CONFIG = {
     enableScheduledStart: true,     // 是否启用定时启动
-    scheduledStartTime: "22:43:00", // 定时启动时间 (HH:MM:SS)
-    defaultProxyType: 1             // 默认代理类型 (1=闪尘代理, 2=IP赞代理)
+    scheduledStartTime: "22:58:00", // 定时启动时间 (HH:MM:SS)
+    defaultProxyType: 2             // 默认代理类型 (1=闪尘代理, 2=IP赞代理)
 };
 // ====================================================
 
