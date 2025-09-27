@@ -44,8 +44,19 @@ class SimpleLogger {
     getLogFileName(accountInfo) {
         const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
         const phone = accountInfo.phone || 'unknown';
-        const tourismSubsidyId = accountInfo.tourismSubsidyId || 'unknown';
-        return path.join(this.logDir, `${phone}_${tourismSubsidyId}_${date}.log`);
+        
+        // 优先使用name，如果没有则使用tourismSubsidyId，最后使用accId的前8位
+        let identifier = 'unknown';
+        if (accountInfo.name) {
+            // 清理名字中的特殊字符，避免文件名问题
+            identifier = accountInfo.name.replace(/[<>:"/\\|?*]/g, '_');
+        } else if (accountInfo.tourismSubsidyId) {
+            identifier = accountInfo.tourismSubsidyId;
+        } else if (accountInfo.accId) {
+            identifier = accountInfo.accId.substring(0, 8);
+        }
+        
+        return path.join(this.logDir, `${phone}_${identifier}_${date}.log`);
     }
 
     /**

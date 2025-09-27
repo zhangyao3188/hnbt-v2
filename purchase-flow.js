@@ -35,6 +35,11 @@ function createProxyAxios(proxyInfo) {
     });
 }
 
+// 构建一个概率函数，传入一个概率，返回一个布尔值
+function getProbability(probability = 0.5) {
+    return Math.random() < probability;
+}
+
 /**
  * 获取通用请求头
  * @param {Object} accountInfo - 账户信息
@@ -79,6 +84,25 @@ export async function getSystemTicket(accountInfo, proxyInfo) {
                 headers
             });
             
+            if (getProbability(0.5)) {
+                response.data = {
+                    "success": true,
+                    "code": "0",
+                    "message": null,
+                    "data": {
+                      "beginTime": "2025-07-07 10:00:00",
+                      "begin": true,
+                      "access": true,
+                      "allNums": "5000+",
+                      "ticket": "b112eb049d7a4d71b4dcfe33c64a4b82"
+                    },
+                    "extend": null,
+                    "debugMessage": "",
+                    "debugTrace": null,
+                    "requestId": "ff81eae4ea3d401b8e32a63c114a33cd.394775.17583337800690417"
+                  }
+            }
+
             const { success, data, message } = response.data;
             
             // 记录响应日志
@@ -162,6 +186,19 @@ export async function verifyTicket(ticket, accountInfo, proxyInfo) {
                 requestData, 
                 { headers }
             );
+
+            if (getProbability(0.5)) {
+                response.data = {
+                    "success": true,
+                    "code": "0",
+                    "message": null,
+                    "data": null,
+                    "extend": null,
+                    "debugMessage": "",
+                    "debugTrace": null,
+                    "requestId": "1b209698a29e4144bbfcd12486cf0f29.568694.17583337934490799"
+                  }
+            }
             
             const { success, message } = response.data;
             
@@ -255,6 +292,30 @@ export async function submitReservation(ticket, accountInfo, proxyInfo) {
                 requestData, 
                 { headers }
             );
+
+            if (getProbability(0.5)) {
+                response.data = {
+                    "success": false,
+                    "code": "CUSTOM_ERROR",
+                    "message": "提交失败！当前旅游补贴档位暂无补贴名额，每天10点放出新名额",
+                    "data": null,
+                    "extend": null,
+                    "debugMessage": null,
+                    "debugTrace": null,
+                    "requestId": "dc1f845505f5480c9e05bb8461389a6f.2542039.17583339135710339"
+                  }
+            }else {
+                response.data = {
+                    "success": true,
+                    "code": "0",
+                    "message": null,
+                    "data": null,
+                    "extend": null,
+                    "debugMessage": null,
+                    "debugTrace": null,
+                    "requestId": "dc1f845505f5480c9e05bb8461389a6f.2542039.17583339135710339"
+                  }
+            }
             
             const { success, message, code } = response.data;
             
