@@ -2,6 +2,7 @@ import fs from 'fs';
 import { purchaseFunction } from './purchase.js';
 import { getProxyFromSource, getAvailableProxyTypes } from './proxy-config.js';
 import { testProxyIP } from './proxy-test.js';
+import { setProxyType, resetProxySwitchCount } from './proxy-manager.js';
 
 /**
  * 解析命令行参数
@@ -76,7 +77,7 @@ async function loadAccountInfo() {
  * @param {number} maxAttempts - 最大尝试次数
  * @returns {Promise<Object>} 验证通过的代理信息
  */
-async function getValidatedProxyIP(proxyType, maxAttempts = 5) {
+async function getValidatedProxyIP(proxyType, maxAttempts = 20) {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
             console.log(`\n🔄 第 ${attempt}/${maxAttempts} 次获取代理IP`);
@@ -98,16 +99,16 @@ async function getValidatedProxyIP(proxyType, maxAttempts = 5) {
             console.log(`❌ 代理IP验证失败: ${testResult.error}`);
             
             if (attempt < maxAttempts) {
-                console.log('⏳ 等待 3 秒后重新获取代理IP...');
-                await new Promise(resolve => setTimeout(resolve, 3000));
+                console.log('🔄 立即重新获取代理IP...');
+                // 移除延时，立即重试
             }
             
         } catch (error) {
             console.error(`💥 第 ${attempt} 次获取代理IP失败:`, error.message);
             
             if (attempt < maxAttempts) {
-                console.log('⏳ 等待 3 秒后重试...');
-                await new Promise(resolve => setTimeout(resolve, 3000));
+                console.log('🔄 立即重试获取代理IP...');
+                // 移除延时，立即重试
             }
         }
     }
@@ -132,6 +133,10 @@ async function main() {
         console.log('🚀 启动抢购程序...');
         console.log(`📡 使用代理类型: ${cmdArgs.proxyType}`);
         console.log('=====================================');
+
+        // 初始化代理管理器
+        setProxyType(cmdArgs.proxyType);
+        resetProxySwitchCount(); // 重置切换计数器，确保每次运行都有完整的切换机会
 
         // 1. 读取账户信息
         const accountInfo = await loadAccountInfo();
