@@ -9,6 +9,7 @@ import {
 import { testProxyIP } from './proxy-test.js';
 import { logSystemStart, logSimpleFinalResult, logProxyTest } from './simple-logger.js';
 import { getProxyFromSource } from './proxy-config.js';
+import { notificationService } from './notification.js';
 
 /**
  * 动态多账户抢购执行器
@@ -461,7 +462,36 @@ export class DynamicMultiAccountExecutor {
                         // 记录最终成功结果
                         logFinalResult(accountInfo, submitResult.success, submitResult.result.message, submitResult.result.data);
                         
+                        // 发送成功推送通知
+                        try {
+                            await notificationService.sendSuccessNotification(accountInfo, submitResult.result.message);
+                        } catch (notifyError) {
+                            console.error(`📱 [${accountId}] 推送通知发送失败:`, notifyError.message);
+                        }
+                        
                         return submitResult.result;
+                    }
+
+                    // 检查是否为重复提交
+                    if (submitResult.result && submitResult.result.shouldStop) {
+                        console.log(`⚠️ [${accountId}] 检测到重复提交，停止该账户抢购`);
+                        
+                        // 记录最终结果
+                        logFinalResult(accountInfo, false, submitResult.result.message, submitResult.result);
+                        
+                        // 发送重复提交推送通知
+                        try {
+                            await notificationService.sendDuplicateNotification(accountInfo, submitResult.result.message);
+                        } catch (notifyError) {
+                            console.error(`📱 [${accountId}] 推送通知发送失败:`, notifyError.message);
+                        }
+                        
+                        return {
+                            success: false,
+                            error: 'DUPLICATE_SUBMISSION',
+                            message: submitResult.result.message,
+                            shouldStop: true
+                        };
                     }
 
                     // 检查是否需要重新获取ticket
@@ -537,6 +567,22 @@ export class DynamicMultiAccountExecutor {
                 result: result
             };
         } catch (error) {
+            // 检查是否为重复提交错误
+            if (error.message?.includes('DUPLICATE_SUBMISSION:')) {
+                const originalMessage = error.message.replace('DUPLICATE_SUBMISSION: ', '');
+                return {
+                    success: false,
+                    result: {
+                        success: false,
+                        error: 'DUPLICATE_SUBMISSION',
+                        message: originalMessage,
+                        shouldStop: true,
+                        code: error.code,
+                        originalData: error.originalData
+                    }
+                };
+            }
+            
             const isNetErr = proxyManager.isNetworkError(error) || error.message?.includes('NETWORK_ERROR:');
             
             if (!error.message?.includes('NETWORK_ERROR:')) {

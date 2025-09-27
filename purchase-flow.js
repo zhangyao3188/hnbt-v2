@@ -84,24 +84,24 @@ export async function getSystemTicket(accountInfo, proxyInfo) {
                 headers
             });
             
-            if (getProbability(0.5)) {
-                response.data = {
-                    "success": true,
-                    "code": "0",
-                    "message": null,
-                    "data": {
-                      "beginTime": "2025-07-07 10:00:00",
-                      "begin": true,
-                      "access": true,
-                      "allNums": "5000+",
-                      "ticket": "b112eb049d7a4d71b4dcfe33c64a4b82"
-                    },
-                    "extend": null,
-                    "debugMessage": "",
-                    "debugTrace": null,
-                    "requestId": "ff81eae4ea3d401b8e32a63c114a33cd.394775.17583337800690417"
-                  }
-            }
+            // if (getProbability(0.5)) {
+            //     response.data = {
+            //         "success": true,
+            //         "code": "0",
+            //         "message": null,
+            //         "data": {
+            //           "beginTime": "2025-07-07 10:00:00",
+            //           "begin": true,
+            //           "access": true,
+            //           "allNums": "5000+",
+            //           "ticket": "b112eb049d7a4d71b4dcfe33c64a4b82"
+            //         },
+            //         "extend": null,
+            //         "debugMessage": "",
+            //         "debugTrace": null,
+            //         "requestId": "ff81eae4ea3d401b8e32a63c114a33cd.394775.17583337800690417"
+            //       }
+            // }
 
             const { success, data, message } = response.data;
             
@@ -187,18 +187,18 @@ export async function verifyTicket(ticket, accountInfo, proxyInfo) {
                 { headers }
             );
 
-            if (getProbability(0.5)) {
-                response.data = {
-                    "success": true,
-                    "code": "0",
-                    "message": null,
-                    "data": null,
-                    "extend": null,
-                    "debugMessage": "",
-                    "debugTrace": null,
-                    "requestId": "1b209698a29e4144bbfcd12486cf0f29.568694.17583337934490799"
-                  }
-            }
+            // if (getProbability(0.5)) {
+            //     response.data = {
+            //         "success": true,
+            //         "code": "0",
+            //         "message": null,
+            //         "data": null,
+            //         "extend": null,
+            //         "debugMessage": "",
+            //         "debugTrace": null,
+            //         "requestId": "1b209698a29e4144bbfcd12486cf0f29.568694.17583337934490799"
+            //       }
+            // }
             
             const { success, message } = response.data;
             
@@ -293,29 +293,45 @@ export async function submitReservation(ticket, accountInfo, proxyInfo) {
                 { headers }
             );
 
-            if (getProbability(0.5)) {
-                response.data = {
-                    "success": false,
-                    "code": "CUSTOM_ERROR",
-                    "message": "提交失败！当前旅游补贴档位暂无补贴名额，每天10点放出新名额",
-                    "data": null,
-                    "extend": null,
-                    "debugMessage": null,
-                    "debugTrace": null,
-                    "requestId": "dc1f845505f5480c9e05bb8461389a6f.2542039.17583339135710339"
-                  }
-            }else {
-                response.data = {
-                    "success": true,
-                    "code": "0",
-                    "message": null,
-                    "data": null,
-                    "extend": null,
-                    "debugMessage": null,
-                    "debugTrace": null,
-                    "requestId": "dc1f845505f5480c9e05bb8461389a6f.2542039.17583339135710339"
-                  }
-            }
+            // 模拟三种情况：成功、失败、重复提交
+            // const randomValue = Math.random();
+            // if (randomValue < 0.4) {
+            //     // 40% 概率成功
+            //     response.data = {
+            //         "success": true,
+            //         "code": "0",
+            //         "message": null,
+            //         "data": null,
+            //         "extend": null,
+            //         "debugMessage": null,
+            //         "debugTrace": null,
+            //         "requestId": "dc1f845505f5480c9e05bb8461389a6f.2542039.17583339135710339"
+            //     };
+            // } else if (randomValue < 0.7) {
+            //     // 30% 概率普通失败
+            //     response.data = {
+            //         "success": false,
+            //         "code": "CUSTOM_ERROR",
+            //         "message": "提交失败！当前旅游补贴档位暂无补贴名额，每天10点放出新名额",
+            //         "data": null,
+            //         "extend": null,
+            //         "debugMessage": null,
+            //         "debugTrace": null,
+            //         "requestId": "dc1f845505f5480c9e05bb8461389a6f.2542039.17583339135710339"
+            //     };
+            // } else {
+            //     // 30% 概率重复提交
+            //     response.data = {
+            //         "success": false,
+            //         "code": "CUSTOM_ERROR",
+            //         "message": "该用户已提交过申请，不能重复提交",
+            //         "data": null,
+            //         "extend": null,
+            //         "debugMessage": null,
+            //         "debugTrace": null,
+            //         "requestId": "9dada5591d684fb9be899705141647cb.2542666.17583337961630443"
+            //     };
+            // }
             
             const { success, message, code } = response.data;
             
@@ -335,13 +351,13 @@ export async function submitReservation(ticket, accountInfo, proxyInfo) {
                 
                 return {
                     success: true,
-                    message: '预约成功！',
+                    message: '提交成功！',
                     data: response.data
                 };
             }
             
             // 检查是否为ticket过期错误
-            if (code === 'TICKET_INVALID' || (message && message.includes('票据无效') || message.includes('已过期'))) {
+            if (code === 'TICKET_INVALID' || (message && (message.includes('票据无效') || message.includes('已过期')))) {
                 console.log('⚠️ 检测到ticket过期，需要重新获取ticket');
                 logStepResult(accountInfo, stepName, false, `ticket过期: ${message}`, attemptCount);
                 
@@ -354,6 +370,22 @@ export async function submitReservation(ticket, accountInfo, proxyInfo) {
                     message: message,
                     needRefreshTicket: true
                 };
+            }
+            
+            // 检查是否为重复提交错误
+            if (code === 'CUSTOM_ERROR' && message && message.includes('已提交过申请')) {
+                console.log('⚠️ 检测到重复提交，该账户已申请过，停止抢购');
+                logStepResult(accountInfo, stepName, false, `重复提交: ${message}`, attemptCount);
+                
+                // 记录简洁日志：重复提交
+                logSubmitReservationResult(accountInfo, false, `重复提交: ${message}`, response.data);
+                
+                // 抛出特殊异常以便上层处理
+                const duplicateError = new Error(`DUPLICATE_SUBMISSION: ${message}`);
+                duplicateError.code = code;
+                duplicateError.shouldStop = true;
+                duplicateError.originalData = response.data;
+                throw duplicateError;
             }
             
             // 其他失败情况 - 记录简洁日志
