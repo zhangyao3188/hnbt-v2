@@ -6,7 +6,7 @@ import axios from 'axios';
 export const PROXY_CONFIGS = {
     1: {
         name: '闪尘代理',
-        url: 'https://sch.shanchendaili.com/api.html?action=get_ip&key=HU027700915310840704oqdi&time=1&count=1&type=json&only=0',
+        url: 'https://sch.shanchendaili.com/api.html?action=get_ip&key=HU027700915310840704oqdi&time=30&count=1&type=json&only=0',
         parseResponse: (data) => {
             if (data.status !== '0') {
                 throw new Error(`获取代理IP失败: ${data.info || '未知错误'}`);
