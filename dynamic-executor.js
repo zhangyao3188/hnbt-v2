@@ -562,6 +562,15 @@ export class DynamicMultiAccountExecutor {
         
         try {
             const result = await stepFunction();
+            
+            // 检查结果是否表示需要重新获取票据（票据过期）
+            if (result && result.success === false && result.needRefreshTicket) {
+                return {
+                    success: false,
+                    result: result
+                };
+            }
+            
             return {
                 success: true,
                 result: result
